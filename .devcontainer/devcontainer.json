@@ -1,6 +1,12 @@
 {
   "name": "Spring Boot Speed Run - Sesión 1",
-  "image": "mcr.microsoft.com/devcontainers/java:21-bookworm",
+  "features": {
+    "ghcr.io/devcontainers/features/java:1": {
+      "version": "21",
+      "installMaven": "true",
+      "installGradle": "false"
+    }
+  },
   "customizations": {
     "vscode": {
       "extensions": [
@@ -26,5 +32,5 @@
   "otherPortsAttributes": {
     "onAutoForward": "ignore"
   },
-  "postCreateCommand": "mvn test-compile"
+  "postCreateCommand": "chmod +x ./mvnw && ./mvnw test-compile"
 }

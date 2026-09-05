@@ -58,7 +58,7 @@ CLIENTE (Thunder Client / Browser / Frontend)
 En la terminal integrada de VS Code (o pestaña de Tests en la barra lateral izquierda), ejecuta:
 
 ```bash
-mvn test
+./mvnw test
 ```
 
 Verás una suite de 7 pruebas unitarias y de integración. Tu objetivo en esta clase es entender cada concepto y lograr que todas las pruebas pasen a **verde**.
@@ -99,7 +99,7 @@ Verás una suite de 7 pruebas unitarias y de integración. Tu objetivo en esta c
 
 1. En la terminal corre la aplicación:
    ```bash
-   mvn spring-boot:run
+   ./mvnw spring-boot:run
    ```
 2. Abre el archivo `requests.http`.
 3. Haz clic en **Send Request** sobre cada petición para ver las respuestas en tiempo real:
