@@ -1,0 +1,44 @@
+name: Autograding - Sesión 1
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  run-tests:
+    name: Evaluación Automática de Pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar repositorio del estudiante
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 21 (Temurin)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Ejecutar Suite de Tests JUnit
+        run: mvn clean test --batch-mode --no-transfer-progress
+
+      - name: Reporte de Calificación
+        if: always()
+        run: |
+          echo "### 📊 Resumen de Calificación Automática" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ job.status }}" == "success" ]; then
+            echo "🎉 **¡Felicitaciones! Todos los tests pasaron exitosamente (100/100).**" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Etapa 1: Modelo Relacional JPA (@ManyToOne)" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Etapa 2: DTOs Planos (Sin ciclos infinitos de serialización)" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Etapa 3: Query Methods en Repositorio" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Etapa 4: Reglas de Negocio en Service (409 Conflict)" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Etapa 5: Filtros opcionales en el Controller REST" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "⚠️ **Algunos tests fallaron. Revisa la pestaña de 'Run' para ver la pista de error y corregir tu código.**" >> $GITHUB_STEP_SUMMARY
+          fi

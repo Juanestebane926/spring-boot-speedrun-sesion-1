@@ -1,0 +1,69 @@
+### Speed Run Sesión 1 - Pruebas Interactivas REST Client
+@host = http://localhost:8080
+
+### 1. Listar todas las categorías (Sembradas en H2)
+GET {{host}}/api/categorias
+
+### 2. Buscar una categoría por ID
+GET {{host}}/api/categorias/1
+
+### 3. Crear una nueva categoría (201 Created)
+POST {{host}}/api/categorias
+Content-Type: application/json
+
+{
+  "nombre": "Ciberseguridad y Redes"
+}
+
+### 4. Listar todas las vacantes (con campos planos categoriaId y categoriaNombre)
+GET {{host}}/api/vacantes
+
+### 5. Filtrar vacantes por categoriaId (Query Method findByCategoriaId)
+GET {{host}}/api/vacantes?categoriaId=1
+
+### 6. Filtrar vacantes por empresa (Query Method findByEmpresaContainingIgnoreCase)
+GET {{host}}/api/vacantes?empresa=Tech
+
+### 7. Crear vacante asociada a categoría 1 (201 Created)
+POST {{host}}/api/vacantes
+Content-Type: application/json
+
+{
+  "titulo": "Especialista en Seguridad Junior",
+  "empresa": "Tech Colombia",
+  "descripcion": "Monitoreo de seguridad y análisis de vulnerabilidades",
+  "categoriaId": 1
+}
+
+### 8. Probar error de validación: Título vacío o sin categoría (400 Bad Request)
+POST {{host}}/api/vacantes
+Content-Type: application/json
+
+{
+  "titulo": "",
+  "empresa": "Tech Colombia",
+  "descripcion": "Sin título",
+  "categoriaId": null
+}
+
+### 9. Probar categoría inexistente (404 Not Found)
+POST {{host}}/api/vacantes
+Content-Type: application/json
+
+{
+  "titulo": "Backend Engineer",
+  "empresa": "Tech Colombia",
+  "descripcion": "Categoría 999 no existe",
+  "categoriaId": 999
+}
+
+### 10. REGLA DE NEGOCIO: Intentar eliminar una categoría que TIENE vacantes (409 Conflict)
+DELETE {{host}}/api/categorias/1
+
+### 11. Eliminar una categoría vacía sin vacantes (204 No Content)
+DELETE {{host}}/api/categorias/3
+
+### 12. Consola H2 en el navegador
+# URL: http://localhost:8080/h2-console
+# JDBC URL: jdbc:h2:mem:vacantesdb
+# Usuario: sa / Contraseña: (vacía)
