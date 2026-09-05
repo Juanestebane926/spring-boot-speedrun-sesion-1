@@ -24,8 +24,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Suite de Autograding para Sesión 1:
- * Evalúa las 5 etapas arquitectónicas del backend relacional.
+ * Suite de Autoevaluación Pedagógica con Pistas en Español:
+ * Diseñada para que el estudiante sepa exactamente en qué archivo y método intervenir.
  */
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -47,11 +47,25 @@ class VacantesApplicationTests {
     @DisplayName("Etapa 1: Creación de Categoría e ID autogenerado en JPA")
     void test01_crearYBuscarCategoria() {
         CategoriaResponse categoria = categoriaService.crear(new CategoriaRequest("Ciberseguridad"));
-        assertNotNull(categoria.getId(), "La categoría guardada debe tener un ID autogenerado por la base de datos.");
+
+        assertNotNull(categoria.getId(),
+                "\n========================================================================\n"
+                + "❌ ERROR EN ETAPA 1: La categoría no recibió un ID autogenerado.\n"
+                + "📍 DÓNDE REVISAR: src/main/java/com/curso/vacantes/model/Categoria.java\n"
+                + "💡 PISTA: Verificá que el atributo 'id' tenga las anotaciones:\n"
+                + "   @Id\n"
+                + "   @GeneratedValue(strategy = GenerationType.IDENTITY)\n"
+                + "========================================================================");
+
         assertEquals("Ciberseguridad", categoria.getNombre());
 
         CategoriaResponse encontrada = categoriaService.buscarPorId(categoria.getId());
-        assertEquals("Ciberseguridad", encontrada.getNombre(), "Debe poder recuperarse la categoría por su ID.");
+        assertEquals("Ciberseguridad", encontrada.getNombre(),
+                "\n========================================================================\n"
+                + "❌ ERROR EN ETAPA 1: No se pudo recuperar la categoría por su ID.\n"
+                + "📍 DÓNDE REVISAR: src/main/java/com/curso/vacantes/service/CategoriaService.java\n"
+                + "💡 PISTA: El método buscarPorId(id) debe invocar categoriaRepository.findById(id).\n"
+                + "========================================================================");
     }
 
     @Test
@@ -68,8 +82,20 @@ class VacantesApplicationTests {
         ));
 
         assertNotNull(vacante.getId(), "La vacante creada debe tener un ID asignado.");
-        assertEquals(cat.getId(), vacante.getCategoriaId(), "VacanteResponse debe incluir 'categoriaId' de forma plana.");
-        assertEquals("Backend Development", vacante.getCategoriaNombre(), "VacanteResponse debe incluir 'categoriaNombre' de forma plana.");
+
+        assertEquals(cat.getId(), vacante.getCategoriaId(),
+                "\n========================================================================\n"
+                + "❌ ERROR EN ETAPA 2: El DTO VacanteResponse no tiene el 'categoriaId'.\n"
+                + "📍 DÓNDE REVISAR: src/main/java/com/curso/vacantes/service/VacanteService.java (método toResponse)\n"
+                + "💡 PISTA: Mapeá vacante.getCategoria().getId() al campo categoriaId del DTO.\n"
+                + "========================================================================");
+
+        assertEquals("Backend Development", vacante.getCategoriaNombre(),
+                "\n========================================================================\n"
+                + "❌ ERROR EN ETAPA 2: El DTO VacanteResponse no tiene el 'categoriaNombre'.\n"
+                + "📍 DÓNDE REVISAR: src/main/java/com/curso/vacantes/service/VacanteService.java (método toResponse)\n"
+                + "💡 PISTA: Mapeá vacante.getCategoria().getNombre() para exponer el dato plano sin ciclos.\n"
+                + "========================================================================");
     }
 
     @Test
@@ -80,7 +106,15 @@ class VacantesApplicationTests {
         vacanteService.crear(new VacanteRequest("DevOps Engineer", "Cloud Solutions", "Docker y Kubernetes", cat.getId()));
 
         List<VacanteResponse> filtradas = vacanteService.listar(cat.getId(), null);
-        assertFalse(filtradas.isEmpty(), "El filtro findByCategoriaId debe devolver las vacantes de la categoría solicitada.");
+
+        assertFalse(filtradas.isEmpty(),
+                "\n========================================================================\n"
+                + "❌ ERROR EN ETAPA 3A: El filtro por categoriaId no devolvió vacantes.\n"
+                + "📍 DÓNDE REVISAR: src/main/java/com/curso/vacantes/repository/VacanteRepository.java\n"
+                + "💡 PISTA: Asegurate de declarar la firma exacta del Query Method:\n"
+                + "   List<Vacante> findByCategoriaId(Long categoriaId);\n"
+                + "========================================================================");
+
         assertEquals("DevOps Engineer", filtradas.get(0).getTitulo());
     }
 
@@ -92,7 +126,15 @@ class VacantesApplicationTests {
         vacanteService.crear(new VacanteRequest("QA Lead", "MercadoLibre", "Pruebas end-to-end", cat.getId()));
 
         List<VacanteResponse> filtradas = vacanteService.listar(null, "mercadolibre");
-        assertFalse(filtradas.isEmpty(), "La búsqueda parcial por empresa debe ignorar mayúsculas y minúsculas.");
+
+        assertFalse(filtradas.isEmpty(),
+                "\n========================================================================\n"
+                + "❌ ERROR EN ETAPA 3B: La búsqueda por empresa no ignora mayúsculas o no filtra.\n"
+                + "📍 DÓNDE REVISAR: src/main/java/com/curso/vacantes/repository/VacanteRepository.java\n"
+                + "💡 PISTA: Asegurate de declarar en la interfaz:\n"
+                + "   List<Vacante> findByEmpresaContainingIgnoreCase(String empresa);\n"
+                + "========================================================================");
+
         assertEquals("MercadoLibre", filtradas.get(0).getEmpresa());
     }
 
@@ -105,7 +147,17 @@ class VacantesApplicationTests {
 
         assertThrows(CategoriaConVacantesException.class, () -> {
             categoriaService.eliminar(cat.getId());
-        }, "❌ REGLA DE NEGOCIO: No se debe permitir eliminar una categoría que tenga vacantes activas. Debe lanzar CategoriaConVacantesException.");
+        },
+                "\n========================================================================\n"
+                + "❌ ERROR EN ETAPA 4: Regla de negocio no aplicada al eliminar categoría.\n"
+                + "📍 DÓNDE REVISAR: src/main/java/com/curso/vacantes/service/CategoriaService.java\n"
+                + "📍 MÉTODO: eliminar(Long id)\n"
+                + "💡 PISTA: Si una categoría tiene vacantes asociadas, no se debe eliminar.\n"
+                + "   Antes de borrar, validá con:\n"
+                + "   if (vacanteRepository.existsByCategoriaId(id)) {\n"
+                + "       throw new CategoriaConVacantesException(id);\n"
+                + "   }\n"
+                + "========================================================================");
     }
 
     @Test
@@ -114,7 +166,12 @@ class VacantesApplicationTests {
     void test06_eliminarCategoriaSinVacantesPermitido() {
         CategoriaResponse catVacia = categoriaService.crear(new CategoriaRequest("Categoria Temporal"));
         assertDoesNotThrow(() -> categoriaService.eliminar(catVacia.getId()),
-                "Debe ser posible eliminar una categoría que no tiene vacantes asociadas.");
+                "\n========================================================================\n"
+                + "❌ ERROR EN ETAPA 4B: Falló la eliminación de una categoría vacía.\n"
+                + "📍 DÓNDE REVISAR: src/main/java/com/curso/vacantes/service/CategoriaService.java\n"
+                + "💡 PISTA: Cuando existsByCategoriaId(id) sea false, debe llamar a:\n"
+                + "   categoriaRepository.delete(categoria);\n"
+                + "========================================================================");
     }
 
     @Test
