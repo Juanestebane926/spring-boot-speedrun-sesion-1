@@ -2,7 +2,9 @@ name: Autograding - Sesión 1
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [ main, master, solucion ]
+  pull_request:
+    branches: [ main ]
   workflow_dispatch:
 
 permissions:
