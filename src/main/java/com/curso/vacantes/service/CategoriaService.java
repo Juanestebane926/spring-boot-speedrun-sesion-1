@@ -48,14 +48,11 @@ public class CategoriaService {
     public void eliminar(Long id) {
         Categoria categoria = buscarEntidad(id);
 
-        // TODO: Estudiante (Paso 3) - Regla de negocio transaccional:
+        // Regla de negocio transaccional:
         // Si la categoría tiene vacantes asociadas, NO debe permitirse su eliminación.
-        // Descomenta y completa la validación para proteger la integridad de los datos:
-        /*
         if (vacanteRepository.existsByCategoriaId(id)) {
             throw new CategoriaConVacantesException(id);
         }
-        */
 
         categoriaRepository.delete(categoria);
     }
