@@ -23,5 +23,8 @@
       "onAutoForward": "notify"
     }
   },
+  "otherPortsAttributes": {
+    "onAutoForward": "ignore"
+  },
   "postCreateCommand": "mvn test-compile"
 }
