@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "🚀 Iniciar Spring Boot (Vacantes)",
+      "request": "launch",
+      "mainClass": "com.curso.vacantes.VacantesApplication",
+      "projectName": "speedrun-sesion-1"
+    }
+  ]
+}
